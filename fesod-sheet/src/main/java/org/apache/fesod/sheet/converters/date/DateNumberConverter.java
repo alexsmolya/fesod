@@ -56,25 +56,24 @@ public class DateNumberConverter implements Converter<Date> {
     @Override
     public Date convertToJavaData(
             ReadCellData<?> cellData, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) {
-        if (contentProperty == null || contentProperty.getDateTimeFormatProperty() == null) {
-            return DateUtils.getJavaDate(
-                    cellData.getNumberValue().doubleValue(), globalConfiguration.getUse1904windowing());
-        } else {
-            return DateUtils.getJavaDate(
-                    cellData.getNumberValue().doubleValue(),
-                    contentProperty.getDateTimeFormatProperty().getUse1904windowing());
+        boolean use1904windowing = globalConfiguration.getUse1904windowing();
+        if (contentProperty != null
+                && contentProperty.getDateTimeFormatProperty() != null
+                && contentProperty.getDateTimeFormatProperty().getUse1904windowing() != null) {
+            use1904windowing = contentProperty.getDateTimeFormatProperty().getUse1904windowing();
         }
+        return DateUtils.getJavaDate(cellData.getNumberValue().doubleValue(), use1904windowing);
     }
 
     @Override
     public WriteCellData<?> convertToExcelData(
             Date value, ExcelContentProperty contentProperty, GlobalConfiguration globalConfiguration) {
-        if (contentProperty == null || contentProperty.getDateTimeFormatProperty() == null) {
-            return new WriteCellData<>(
-                    BigDecimal.valueOf(DateUtil.getExcelDate(value, globalConfiguration.getUse1904windowing())));
-        } else {
-            return new WriteCellData<>(BigDecimal.valueOf(DateUtil.getExcelDate(
-                    value, contentProperty.getDateTimeFormatProperty().getUse1904windowing())));
+        boolean use1904windowing = globalConfiguration.getUse1904windowing();
+        if (contentProperty != null
+                && contentProperty.getDateTimeFormatProperty() != null
+                && contentProperty.getDateTimeFormatProperty().getUse1904windowing() != null) {
+            use1904windowing = contentProperty.getDateTimeFormatProperty().getUse1904windowing();
         }
+        return new WriteCellData<>(BigDecimal.valueOf(DateUtil.getExcelDate(value, use1904windowing)));
     }
 }
